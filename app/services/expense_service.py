@@ -80,9 +80,8 @@ async def update_expense(expense_id: int, new_expense: Expense):
         raise ValueError("Expense not found")
     existing_expense = Expense(**existing_expense)
     try:
-        update_expense_properties(existing_expense, new_expense)
         await balance_service.change_balance(new_expense.userId, new_expense.amount - existing_expense.amount)
-        return await repository.update(Collections.expenses, expense_id, existing_expense.dict())
+        return await repository.update(Collections.expenses, expense_id, new_expense.dict())
     except ValueError as ve:
         raise ValueError(ve)
     except Exception as e:
@@ -111,20 +110,3 @@ async def delete_expense(expense_id: int):
         raise ValueError(ve)
     except Exception as e:
         raise e
-
-
-def update_expense_properties(existing_expense: Expense, new_expense: Expense):
-    """
-    Updates the properties of an existing Expense object with values from a new Expense object.
-    Args:
-        existing_expense (Expense): The existing Expense object to update.
-        new_expense (Expense): The new Expense object with updated values.
-    Returns:
-        None
-    Raises:
-        TypeError: If either existing_expense or new_expense is not an instance of the Expense class.
-    """
-    existing_expense.date = new_expense.date or new_expense.date
-    existing_expense.amount = new_expense.amount or new_expense.amount
-    existing_expense.beneficiary = new_expense.beneficiary or new_expense.beneficiary
-    existing_expense.documentation = new_expense.documentation or new_expense.documentation
