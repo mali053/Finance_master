@@ -1,7 +1,7 @@
+import json
+from bson import json_util
 from fastapi import APIRouter, HTTPException
 from app.models.user import User
-from app.database import repository
-from app.database.database_connection import Collections
 from app.services import user_service
 
 user_router = APIRouter()
@@ -17,9 +17,10 @@ async def get_users():
         HTTPException: If an error occurs while fetching users from the database.
     """
     try:
-        return await user_service.get_user()
+        users = await user_service.get_user()
+        return json.loads(json_util.dumps(users))
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"An error occurred while fetching users: {e}")
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @user_router.get('/{user_id}')
@@ -34,7 +35,8 @@ async def get_user_by_id(user_id: str):
            HTTPException: If the specified user ID is not found or if an error occurs.
        """
     try:
-        return await user_service.get_user_by_id(user_id)
+        user = await user_service.get_user_by_id(user_id)
+        return json.loads(json_util.dumps(user))
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"An error occurred while fetching user: {e}")
 
@@ -70,8 +72,10 @@ async def update_user(user_id: str, updated_data: User):
      """
     try:
         return await user_service.update_user(user_id, updated_data)
+    except ValueError as e:
+        return HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"An error occurred while updating user: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @user_router.delete('/{user_id}')
