@@ -2,7 +2,7 @@ from app.models.user import User
 from app.services import user_service
 
 
-async def change_balance(user_id: int, difference: float):
+async def change_balance(user_id: str, difference: float):
     """
     Adjusts the balance of a user by a specified difference.
     Args:

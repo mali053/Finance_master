@@ -71,8 +71,6 @@ async def update(collection, document_id, updated_data):
     collection_name = collection.name
     try:
         result = my_db[collection_name].update_one({"id": document_id}, {"$set": updated_data})
-        if result.modified_count == 0:
-            raise ValueError(f"No document with ID {document_id} found in collection {collection_name}")
         return updated_data
     except Exception as e:
         raise RuntimeError(f"Error updating document in collection {collection_name}: {e}")
