@@ -1,9 +1,11 @@
 from app.database import repository
 from app.database.database_connection import Collections
+from app.log import log_decorator
 from app.models.expense import Expense
 from app.services import balance_service
 
 
+@log_decorator('app.log')
 async def get_expenses(user_id: str):
     """
     Retrieve all expenses from the database.
@@ -20,6 +22,7 @@ async def get_expenses(user_id: str):
         raise e
 
 
+@log_decorator('app.log')
 async def get_expense_by_id(expense_id: int):
     """
     Retrieve an expense entry by its ID.
@@ -37,6 +40,7 @@ async def get_expense_by_id(expense_id: int):
         raise e
 
 
+@log_decorator('app.log')
 async def add_expense(new_expense: Expense):
     """
     Add a new expense entry to the database.
@@ -53,7 +57,7 @@ async def add_expense(new_expense: Expense):
     if await get_expense_by_id(new_expense.id) is not None:
         raise ValueError("Expense ID already exists")
     try:
-        await balance_service.change_balance(new_expense.userId, new_expense.amount)
+        await balance_service.change_balance(new_expense.userId, new_expense.amount * -1)
         return await repository.add(Collections.expenses, new_expense.dict())
     except ValueError as ve:
         raise ValueError(ve)
@@ -61,6 +65,7 @@ async def add_expense(new_expense: Expense):
         raise e
 
 
+@log_decorator('app.log')
 async def update_expense(expense_id: int, new_expense: Expense):
     """
     Update an existing expense entry's data.
@@ -80,7 +85,7 @@ async def update_expense(expense_id: int, new_expense: Expense):
         raise ValueError("Expense not found")
     existing_expense = Expense(**existing_expense)
     try:
-        await balance_service.change_balance(new_expense.userId, new_expense.amount - existing_expense.amount)
+        await balance_service.change_balance(new_expense.userId, existing_expense.amount - new_expense.amount)
         return await repository.update(Collections.expenses, expense_id, new_expense.dict())
     except ValueError as ve:
         raise ValueError(ve)
@@ -88,6 +93,7 @@ async def update_expense(expense_id: int, new_expense: Expense):
         raise e
 
 
+@log_decorator('app.log')
 async def delete_expense(expense_id: int):
     """
     Delete an expense entry from the database.
@@ -104,7 +110,7 @@ async def delete_expense(expense_id: int):
         raise ValueError("Expense not found")
     existing_expense = Expense(**existing_expense)
     try:
-        await balance_service.change_balance(existing_expense.userId, existing_expense.amount * -1)
+        await balance_service.change_balance(existing_expense.userId, existing_expense.amount)
         return await repository.delete(Collections.expenses, expense_id)
     except ValueError as ve:
         raise ValueError(ve)

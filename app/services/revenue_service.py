@@ -1,10 +1,12 @@
 from app.database import repository
 from app.database.database_connection import Collections
+from app.log import log_decorator
 from app.models.expense import Expense
 from app.models.revenue import Revenue
 from app.services import balance_service
 
 
+@log_decorator('app.log')
 async def get_revenues(user_id: str):
     """
     Retrieve all expenses from the database.
@@ -21,6 +23,7 @@ async def get_revenues(user_id: str):
         raise e
 
 
+@log_decorator('app.log')
 async def get_revenue_by_id(revenue_id: int):
     """
     Retrieve an expense entry by its ID.
@@ -39,6 +42,7 @@ async def get_revenue_by_id(revenue_id: int):
         raise e
 
 
+@log_decorator('app.log')
 async def add_revenue(new_revenue: Revenue):
     """
     Add a new expense entry to the database.
@@ -65,6 +69,7 @@ async def add_revenue(new_revenue: Revenue):
         raise e
 
 
+@log_decorator('app.log')
 async def update_revenue(revenue_id: int, new_revenue: Revenue):
     """
     Update an existing expense entry's data.
@@ -90,13 +95,14 @@ async def update_revenue(revenue_id: int, new_revenue: Revenue):
         print(new_revenue.amount)
         print(existing_revenue.amount)
         await balance_service.change_balance(new_revenue.userId, new_revenue.amount - existing_revenue.amount)
-        return await repository.update(Collections.revenues, revenue_id, existing_revenue.dict())
+        return await repository.update(Collections.revenues, revenue_id, new_revenue.dict())
     except ValueError as ve:
         raise ValueError(ve)
     except Exception as e:
         raise e
 
 
+@log_decorator('app.log')
 async def delete_revenue(revenue_id: int):
     """
     Delete an expense entry from the database.
@@ -114,7 +120,7 @@ async def delete_revenue(revenue_id: int):
         raise ValueError("Expense not found")
     existing_revenue = Revenue(**existing_revenue)
     try:
-        await balance_service.change_balance(existing_revenue.userId, existing_revenue.amount * 1)
+        await balance_service.change_balance(existing_revenue.userId, existing_revenue.amount * -1)
         return await repository.delete(Collections.revenues, revenue_id)
     except ValueError as ve:
         raise ValueError(ve)

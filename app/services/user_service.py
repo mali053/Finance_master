@@ -1,9 +1,10 @@
-from fastapi import HTTPException
 from app.database import repository
 from app.database.database_connection import Collections
+from app.log import log_decorator
 from app.models.user import User
 
 
+@log_decorator('app.log')
 async def get_user():
     """
       Retrieve all users from the database.
@@ -18,6 +19,7 @@ async def get_user():
         raise e
 
 
+@log_decorator('app.log')
 async def get_user_by_id(user_id: str):
     """
         Retrieve a user by their ID.
@@ -30,14 +32,12 @@ async def get_user_by_id(user_id: str):
             Exception: If there is an error during the retrieval process.
         """
     try:
-        user = await repository.get_by_id(Collections.users, user_id)
-        if user is None:
-            raise HTTPException(status_code=404, detail=f"User with ID {user_id} not found")
-        return user
+        return await repository.get_by_id(Collections.users, user_id)
     except Exception as e:
         raise e
 
 
+@log_decorator('app.log')
 async def add_user(new_user: User):
     """
        Add a new user to the database.
@@ -59,6 +59,7 @@ async def add_user(new_user: User):
         raise e
 
 
+@log_decorator('app.log')
 async def update_user(user_id: str, updated_data: User):
     """
        Update an existing user's data.
@@ -79,6 +80,7 @@ async def update_user(user_id: str, updated_data: User):
         raise e
 
 
+@log_decorator('app.log')
 async def delete_user(user_id: str):
     """
      Delete a user from the database.
