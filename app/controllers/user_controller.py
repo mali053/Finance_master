@@ -54,8 +54,10 @@ async def add_user(new_user: User):
        """
     try:
         return await user_service.add_user(new_user)
+    except ValueError as e:
+        return HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @user_router.put('/{user_id}')
@@ -69,6 +71,8 @@ async def update_user(user_id: str, updated_data: User):
          dict: A dictionary representing the updated user.
      Raises:
          HTTPException: If the specified user ID is not found or if an error occurs.
+         :param user_id:
+         :param updated_data:
      """
     try:
         return await user_service.update_user(user_id, updated_data)
@@ -90,6 +94,7 @@ async def delete_user(user_id: str):
           HTTPException: If the specified user ID is not found or if an error occurs.
       """
     try:
-        return await user_service.delete_user(user_id)
+        deleted_user = await user_service.delete_user(user_id)
+        return json.loads(json_util.dumps(deleted_user))
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"An error occurred while deleting user: {e}")

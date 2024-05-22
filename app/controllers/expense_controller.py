@@ -36,7 +36,8 @@ async def get_expense_by_id(expense_id: int):
         HTTPException: If the specified expense ID is not found or if an error occurs.
     """
     try:
-        return await expense_service.get_expense_by_id(expense_id)
+        expense = await expense_service.get_expense_by_id(expense_id)
+        return json.loads(json_util.dumps(expense))
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
 
