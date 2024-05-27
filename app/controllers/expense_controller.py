@@ -25,7 +25,7 @@ async def get_expenses(user_id: str):
 
 
 @expense_router.get('/{expense_id}')
-async def get_expense_by_id(expense_id: int):
+async def get_expense_by_id(expense_id: int, user_id: str):
     """
     Retrieves details about a specific expense entry by its ID from the database.
     Args:
@@ -34,9 +34,11 @@ async def get_expense_by_id(expense_id: int):
         dict: A dictionary representing the expense entry.
     Raises:
         HTTPException: If the specified expense ID is not found or if an error occurs.
+        :param expense_id:
+        :param user_id:
     """
     try:
-        expense = await expense_service.get_expense_by_id(expense_id)
+        expense = await expense_service.get_expense_by_id(expense_id, user_id)
         return json.loads(json_util.dumps(expense))
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))

@@ -26,7 +26,7 @@ async def get_revenues(user_id: str):
 
 
 @revenue_router.get('/{revenue_id}')
-async def get_revenue_by_id(revenue_id: int):
+async def get_revenue_by_id(revenue_id: int, user_id: str):
     """
     Retrieves details about a specific expense entry by its ID from the database.
     Args:
@@ -35,10 +35,11 @@ async def get_revenue_by_id(revenue_id: int):
         dict: A dictionary representing the expense entry.
     Raises:
         HTTPException: If the specified expense ID is not found or if an error occurs.
+        :param user_id:
         :param revenue_id:
     """
     try:
-        revenue = await revenue_service.get_revenue_by_id(revenue_id)
+        revenue = await revenue_service.get_revenue_by_id(revenue_id, user_id)
         return json.loads(json_util.dumps(revenue))
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))

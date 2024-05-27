@@ -23,7 +23,7 @@ async def get_expenses(user_id: str):
 
 
 @log_decorator('app.log')
-async def get_expense_by_id(expense_id: int):
+async def get_expense_by_id(expense_id: int, user_id: str):
     """
     Retrieve an expense entry by its ID.
     Args:
@@ -33,11 +33,14 @@ async def get_expense_by_id(expense_id: int):
     Raises:
         ValueError: If the expense entry is not found.
         Exception: If there is an error during the retrieval process.
+        :param expense_id:
+        :param user_id:
     """
     try:
         expense = await repository.get_by_id(Collections.expenses, expense_id)
-        print(expense_id)
-        return expense
+        if user_id == expense['userId']:
+            return expense
+        raise ValueError('you try get expense of another user')
     except Exception as e:
         raise e
 

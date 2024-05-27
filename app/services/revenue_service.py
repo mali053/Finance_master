@@ -28,7 +28,7 @@ async def get_revenues(user_id: str):
 
 
 @log_decorator('app.log')
-async def get_revenue_by_id(revenue_id: int):
+async def get_revenue_by_id(revenue_id: int, user_id: str):
     """
     Retrieve an expense entry by its ID.
     Args:
@@ -38,10 +38,14 @@ async def get_revenue_by_id(revenue_id: int):
     Raises:
         ValueError: If the expense entry is not found.
         Exception: If there is an error during the retrieval process.
+        :param user_id:
         :param revenue_id:
     """
     try:
-        return await repository.get_by_id(Collections.revenues, revenue_id)
+        revenue = await repository.get_by_id(Collections.revenues, revenue_id)
+        if user_id == revenue['userId']:
+            return revenue
+        raise ValueError('you try get expense of another user')
     except Exception as e:
         raise e
 
