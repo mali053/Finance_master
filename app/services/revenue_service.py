@@ -1,3 +1,7 @@
+import json
+
+from bson import json_util
+
 from app.database import repository
 from app.database.database_connection import Collections
 from app.log import log_decorator
@@ -57,8 +61,9 @@ async def add_revenue(new_revenue: Revenue):
     """
     if new_revenue is None:
         raise ValueError("Expense object is null")
-    if await get_revenue_by_id(new_revenue.id) is not None:
-        raise ValueError("Expense ID already exists")
+    revenues = await repository.get_all(Collections.revenues)
+    max_item = max(revenues, key=lambda item: item['id'])
+    new_revenue.id = max_item['id']+1
     try:
         print(new_revenue)
         await balance_service.change_balance(new_revenue.userId, new_revenue.amount)
@@ -86,11 +91,12 @@ async def update_revenue(revenue_id: int, new_revenue: Revenue):
     """
     if new_revenue is None:
         raise ValueError("Revenue object is null")
-    existing_revenue = await get_revenue_by_id(new_revenue.id)
+    existing_revenue = await get_revenue_by_id(revenue_id)
     if existing_revenue is None:
         raise ValueError("Revenue not found")
     print(existing_revenue['amount'])
     existing_revenue = Revenue(**existing_revenue)
+    new_revenue.id = existing_revenue.id
     try:
         print(new_revenue.amount)
         print(existing_revenue.amount)

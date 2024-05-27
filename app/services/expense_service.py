@@ -35,7 +35,9 @@ async def get_expense_by_id(expense_id: int):
         Exception: If there is an error during the retrieval process.
     """
     try:
-        return await repository.get_by_id(Collections.expenses, expense_id)
+        expense = await repository.get_by_id(Collections.expenses, expense_id)
+        print(expense_id)
+        return expense
     except Exception as e:
         raise e
 
@@ -54,8 +56,9 @@ async def add_expense(new_expense: Expense):
     """
     if new_expense is None:
         raise ValueError("Expense object is null")
-    if await get_expense_by_id(new_expense.id) is not None:
-        raise ValueError("Expense ID already exists")
+    expenses = await repository.get_all(Collections.expenses)
+    max_item = max(expenses, key=lambda item: item['id'])
+    new_expense.id = max_item['id'] + 1
     try:
         await balance_service.change_balance(new_expense.userId, new_expense.amount * -1)
         return await repository.add(Collections.expenses, new_expense.dict())
@@ -80,10 +83,11 @@ async def update_expense(expense_id: int, new_expense: Expense):
     """
     if new_expense is None:
         raise ValueError("Expense object is null")
-    existing_expense = await get_expense_by_id(new_expense.id)
+    existing_expense = await get_expense_by_id(expense_id)
     if existing_expense is None:
         raise ValueError("Expense not found")
     existing_expense = Expense(**existing_expense)
+    new_expense.id = existing_expense.id
     try:
         await balance_service.change_balance(new_expense.userId, existing_expense.amount - new_expense.amount)
         return await repository.update(Collections.expenses, expense_id, new_expense.dict())
