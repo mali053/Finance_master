@@ -86,7 +86,7 @@ async def update_expense(expense_id: int, new_expense: Expense):
     """
     if new_expense is None:
         raise ValueError("Expense object is null")
-    existing_expense = await get_expense_by_id(expense_id)
+    existing_expense = await get_expense_by_id(expense_id, new_expense.userId)
     if existing_expense is None:
         raise ValueError("Expense not found")
     existing_expense = Expense(**existing_expense)
@@ -101,7 +101,7 @@ async def update_expense(expense_id: int, new_expense: Expense):
 
 
 @log_decorator('app.log')
-async def delete_expense(expense_id: int):
+async def delete_expense(expense_id: int, user_id: str):
     """
     Delete an expense entry from the database.
     Args:
@@ -111,8 +111,10 @@ async def delete_expense(expense_id: int):
     Raises:
         ValueError: If the expense entry is not found.
         Exception: If there is an error during the deletion process.
+        :param expense_id:
+        :param user_id:
     """
-    existing_expense = await get_expense_by_id(expense_id)
+    existing_expense = await get_expense_by_id(expense_id, user_id)
     if existing_expense is None:
         raise ValueError("Expense not found")
     existing_expense = Expense(**existing_expense)

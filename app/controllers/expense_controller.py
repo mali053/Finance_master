@@ -56,7 +56,8 @@ async def add_expense(new_expense: Expense):
         HTTPException: If an error occurs while adding the expense entry.
     """
     try:
-        return await expense_service.add_expense(new_expense)
+        expense = await expense_service.add_expense(new_expense)
+        return "The expense has been successfully added👼👻"
     except ValueError as e:
         return HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -84,7 +85,7 @@ async def update_expense(expense_id: int, new_expense: Expense):
 
 
 @expense_router.delete('/{expense_id}')
-async def delete_expense(expense_id: int):
+async def delete_expense(expense_id: int, user_id: str):
     """
     Deletes an existing expense entry from the database.
     Args:
@@ -93,9 +94,11 @@ async def delete_expense(expense_id: int):
         dict: A dictionary representing the deleted expense entry.
     Raises:
         HTTPException: If the specified expense ID is not found or if an error occurs.
+        :param expense_id:
+        :param user_id:
     """
     try:
-        deleted_expense = await expense_service.delete_expense(expense_id)
+        deleted_expense = await expense_service.delete_expense(expense_id, user_id)
         return json.loads(json_util.dumps(deleted_expense))
     except ValueError as e:
         return HTTPException(status_code=400, detail=str(e))

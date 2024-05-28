@@ -45,7 +45,7 @@ async def get_revenue_by_id(revenue_id: int, user_id: str):
         revenue = await repository.get_by_id(Collections.revenues, revenue_id)
         if user_id == revenue['userId']:
             return revenue
-        raise ValueError('you try get expense of another user')
+        raise ValueError('you try get revenue of another user')
     except Exception as e:
         raise e
 
@@ -95,7 +95,7 @@ async def update_revenue(revenue_id: int, new_revenue: Revenue):
     """
     if new_revenue is None:
         raise ValueError("Revenue object is null")
-    existing_revenue = await get_revenue_by_id(revenue_id)
+    existing_revenue = await get_revenue_by_id(revenue_id, new_revenue.userId)
     if existing_revenue is None:
         raise ValueError("Revenue not found")
     print(existing_revenue['amount'])
@@ -113,7 +113,7 @@ async def update_revenue(revenue_id: int, new_revenue: Revenue):
 
 
 @log_decorator('app.log')
-async def delete_revenue(revenue_id: int):
+async def delete_revenue(revenue_id: int, user_id: str):
     """
     Delete an expense entry from the database.
     Args:
@@ -125,7 +125,7 @@ async def delete_revenue(revenue_id: int):
         Exception: If there is an error during the deletion process.
         :param revenue_id:
     """
-    existing_revenue = await get_revenue_by_id(revenue_id)
+    existing_revenue = await get_revenue_by_id(revenue_id, user_id)
     if existing_revenue is None:
         raise ValueError("Expense not found")
     existing_revenue = Revenue(**existing_revenue)

@@ -58,7 +58,8 @@ async def add_revenue(new_revenue: Revenue):
         :param new_revenue:
     """
     try:
-        return await revenue_service.add_revenue(new_revenue)
+        revenue = await revenue_service.add_revenue(new_revenue)
+        return "The income has been added successfully😘😘"
     except ValueError as e:
         return HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -88,7 +89,7 @@ async def update_revenue(revenue_id: int, new_revenue: Revenue):
 
 
 @revenue_router.delete('/{revenue_id}')
-async def delete_revenue(revenue_id: int):
+async def delete_revenue(revenue_id: int, user_id: str):
     """
     Deletes an existing expense entry from the database.
     Args:
@@ -97,10 +98,11 @@ async def delete_revenue(revenue_id: int):
         dict: A dictionary representing the deleted expense entry.
     Raises:
         HTTPException: If the specified expense ID is not found or if an error occurs.
+        :param user_id:
         :param revenue_id:
     """
     try:
-        deleted_revenue = await revenue_service.delete_revenue(revenue_id)
+        deleted_revenue = await revenue_service.delete_revenue(revenue_id, user_id)
         return json.loads(json_util.dumps(deleted_revenue))
     except ValueError as e:
         return HTTPException(status_code=400, detail=str(e))
