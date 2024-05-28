@@ -53,9 +53,31 @@ async def add_user(new_user: User):
            HTTPException: If an error occurs while adding the user.
        """
     try:
-        return await user_service.add_user(new_user)
+        user = await user_service.add_user(new_user)
+        return "You have successfully registered❤️❤️"
     except ValueError as e:
         return HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@user_router.post('/login')
+async def login(email: str, password: str):
+    """
+    Authenticate a user and return their details.
+    Args:
+        email (str): The email address of the user.
+        password (str): The password of the user.
+    Returns:
+        dict: A dictionary representing the authenticated user.
+    Raises:
+        HTTPException: If the email or password is incorrect, or if there is an internal server error.
+    """
+    try:
+        user = await user_service.login(email, password)
+        return json.loads(json_util.dumps(user))
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
