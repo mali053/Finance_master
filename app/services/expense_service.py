@@ -8,9 +8,11 @@ from app.services import balance_service
 @log_decorator('app.log')
 async def get_expenses(user_id: str):
     """
-    Retrieve all expenses from the database.
+    Retrieve all expenses for a specific user from the database.
+    Args:
+        user_id (str): The ID of the user whose expenses are to be retrieved.
     Returns:
-        list: A list of expense documents from the database.
+        list: A list of expense documents for the specified user.
     Raises:
         Exception: If there is an error during the retrieval process.
     """
@@ -25,22 +27,21 @@ async def get_expenses(user_id: str):
 @log_decorator('app.log')
 async def get_expense_by_id(expense_id: int, user_id: str):
     """
-    Retrieve an expense entry by its ID.
+    Retrieve a specific expense entry by its ID for a specific user.
     Args:
         expense_id (int): The ID of the expense entry to retrieve.
+        user_id (str): The ID of the user who owns the expense.
     Returns:
         dict: The expense document if found.
     Raises:
-        ValueError: If the expense entry is not found.
+        ValueError: If the expense entry is not found or does not belong to the specified user.
         Exception: If there is an error during the retrieval process.
-        :param expense_id:
-        :param user_id:
     """
     try:
         expense = await repository.get_by_id(Collections.expenses, expense_id)
         if user_id == expense['userId']:
             return expense
-        raise ValueError('you try get expense of another user')
+        raise ValueError('Attempting to retrieve an expense of another user')
     except Exception as e:
         raise e
 
@@ -106,13 +107,12 @@ async def delete_expense(expense_id: int, user_id: str):
     Delete an expense entry from the database.
     Args:
         expense_id (int): The ID of the expense entry to delete.
+        user_id (str): The ID of the user who owns the expense.
     Returns:
         dict: The deleted expense document.
     Raises:
         ValueError: If the expense entry is not found.
         Exception: If there is an error during the deletion process.
-        :param expense_id:
-        :param user_id:
     """
     existing_expense = await get_expense_by_id(expense_id, user_id)
     if existing_expense is None:

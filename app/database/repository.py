@@ -13,6 +13,8 @@ async def get_all(collection):
             Should be a value from the Collections enum.
     Returns:
         list: A list of documents retrieved from the specified collection.
+    Raises:
+        RuntimeError: If there is an error fetching data from the collection.
     """
     collection_name = collection.name
     try:
@@ -30,6 +32,8 @@ async def get_by_id(collection, document_id):
         document_id (str): The ID of the document to fetch.
     Returns:
         dict: The document retrieved from the specified collection.
+    Raises:
+        RuntimeError: If there is an error fetching data from the collection.
     """
     collection_name = collection.name
     try:
@@ -47,6 +51,8 @@ async def add(collection, document):
         document (dict): The document to add to the collection.
     Returns:
         dict: The inserted document ID.
+    Raises:
+        RuntimeError: If there is an error adding the document to the collection.
     """
     print(f"insert:  {document}")
     collection_name = collection.name
@@ -67,6 +73,8 @@ async def update(collection, document_id, updated_data):
         updated_data (dict): The updated data for the document.
     Returns:
         dict: The updated document.
+    Raises:
+        RuntimeError: If there is an error updating the document in the collection.
     """
     collection_name = collection.name
     try:
@@ -85,6 +93,9 @@ async def delete(collection, document_id):
         document_id (str): The ID of the document to delete.
     Returns:
         dict: The deleted document.
+    Raises:
+        RuntimeError: If there is an error deleting the document from the collection.
+        ValueError: If the document with the specified ID is not found in the collection.
     """
     collection_name = collection.name
     try:

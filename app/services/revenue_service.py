@@ -13,9 +13,11 @@ from app.services import balance_service
 @log_decorator('app.log')
 async def get_revenues(user_id: str):
     """
-    Retrieve all expenses from the database.
+    Retrieve all revenues from the database for a specific user.
+    Args:
+        user_id (str): The ID of the user whose revenues will be retrieved.
     Returns:
-        list: A list of expense documents from the database.
+        list: A list of revenue documents from the database.
     Raises:
         Exception: If there is an error during the retrieval process.
     """
@@ -30,16 +32,15 @@ async def get_revenues(user_id: str):
 @log_decorator('app.log')
 async def get_revenue_by_id(revenue_id: int, user_id: str):
     """
-    Retrieve an expense entry by its ID.
+    Retrieve a revenue entry by its ID.
     Args:
-        expense_id (int): The ID of the expense entry to retrieve.
+        revenue_id (int): The ID of the revenue entry to retrieve.
+        user_id (str): The ID of the user who owns the revenue.
     Returns:
-        dict: The expense document if found.
+        dict: The revenue document if found.
     Raises:
-        ValueError: If the expense entry is not found.
+        ValueError: If the revenue entry is not found.
         Exception: If there is an error during the retrieval process.
-        :param user_id:
-        :param revenue_id:
     """
     try:
         revenue = await repository.get_by_id(Collections.revenues, revenue_id)
@@ -53,15 +54,14 @@ async def get_revenue_by_id(revenue_id: int, user_id: str):
 @log_decorator('app.log')
 async def add_revenue(new_revenue: Revenue):
     """
-    Add a new expense entry to the database.
+    Add a new revenue entry to the database.
     Args:
-        new_expense (Expense): The expense object to add.
+        new_revenue (Revenue): The revenue object to add.
     Returns:
-        dict: The added expense document.
+        dict: The added revenue document.
     Raises:
-        ValueError: If the expense object is null or the expense ID already exists.
+        ValueError: If the revenue object is null or the revenue ID already exists.
         Exception: If there is an error during the addition process.
-        :param new_revenue:
     """
     if new_revenue is None:
         raise ValueError("Expense object is null")
@@ -81,17 +81,15 @@ async def add_revenue(new_revenue: Revenue):
 @log_decorator('app.log')
 async def update_revenue(revenue_id: int, new_revenue: Revenue):
     """
-    Update an existing expense entry's data.
+    Update an existing revenue entry's data.
     Args:
-        expense_id (int): The ID of the expense entry to update.
-        new_expense (Expense): The updated expense object.
+        revenue_id (int): The ID of the revenue entry to update.
+        new_revenue (Revenue): The updated revenue object.
     Returns:
-        dict: The updated expense document.
+        dict: The updated revenue document.
     Raises:
-        ValueError: If the expense object is null or the expense entry is not found.
+        ValueError: If the revenue object is null or the revenue entry is not found.
         Exception: If there is an error during the update process.
-        :param new_revenue:
-        :param revenue_id:
     """
     if new_revenue is None:
         raise ValueError("Revenue object is null")
@@ -115,15 +113,15 @@ async def update_revenue(revenue_id: int, new_revenue: Revenue):
 @log_decorator('app.log')
 async def delete_revenue(revenue_id: int, user_id: str):
     """
-    Delete an expense entry from the database.
+    Delete a revenue entry from the database.
     Args:
-        expense_id (int): The ID of the expense entry to delete.
+        revenue_id (int): The ID of the revenue entry to delete.
+        user_id (str): The ID of the user who owns the revenue.
     Returns:
-        dict: The deleted expense document.
+        dict: The deleted revenue document.
     Raises:
-        ValueError: If the expense entry is not found.
+        ValueError: If the revenue entry is not found.
         Exception: If there is an error during the deletion process.
-        :param revenue_id:
     """
     existing_revenue = await get_revenue_by_id(revenue_id, user_id)
     if existing_revenue is None:

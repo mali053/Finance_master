@@ -17,7 +17,7 @@ async def get_users():
         HTTPException: If an error occurs while fetching users from the database.
     """
     try:
-        users = await user_service.get_user()
+        users = await user_service.get_users()
         return json.loads(json_util.dumps(users))
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
@@ -26,14 +26,14 @@ async def get_users():
 @user_router.get('/{user_id}')
 async def get_user_by_id(user_id: str):
     """
-       Retrieves details about a specific user by their ID from the database.
-       Args:
-           user_id (int): The ID of the user to retrieve.
-       Returns:
-           dict: A dictionary representing the user.
-       Raises:
-           HTTPException: If the specified user ID is not found or if an error occurs.
-       """
+    Retrieves details about a specific user by their ID from the database.
+    Args:
+        user_id (int): The ID of the user to retrieve.
+    Returns:
+        dict: A dictionary representing the user.
+    Raises:
+        HTTPException: If the specified user ID is not found or if an error occurs.
+    """
     try:
         user = await user_service.get_user_by_id(user_id)
         return json.loads(json_util.dumps(user))
@@ -44,14 +44,14 @@ async def get_user_by_id(user_id: str):
 @user_router.post('/')
 async def add_user(new_user: User):
     """
-       Adds a new user to the database.
-       Args:
-           new_user (User): An instance of the User class representing the user to be added.
-       Returns:
-           dict: A dictionary representing the newly added user.
-       Raises:
-           HTTPException: If an error occurs while adding the user.
-       """
+    Adds a new user to the database.
+    Args:
+        new_user (User): An instance of the User class representing the user to be added.
+    Returns:
+        dict: A dictionary representing the newly added user.
+    Raises:
+        HTTPException: If an error occurs while adding the user.
+    """
     try:
         user = await user_service.add_user(new_user)
         return "You have successfully registered❤️❤️"
@@ -85,17 +85,15 @@ async def login(email: str, password: str):
 @user_router.put('/{user_id}')
 async def update_user(user_id: str, updated_data: User):
     """
-     Updates an existing user in the database.
-     Args:
-         user_id (int): The ID of the user to update.
-         new_user (User): An instance of the User class representing the user to be updated.
-     Returns:
-         dict: A dictionary representing the updated user.
-     Raises:
-         HTTPException: If the specified user ID is not found or if an error occurs.
-         :param user_id:
-         :param updated_data:
-     """
+    Updates an existing user in the database.
+    Args:
+        user_id (int): The ID of the user to update.
+        updated_data (User): An instance of the User class representing the user to be updated.
+    Returns:
+        dict: A dictionary representing the updated user.
+    Raises:
+        HTTPException: If the specified user ID is not found or if an error occurs.
+    """
     try:
         return await user_service.update_user(user_id, updated_data)
     except ValueError as e:
@@ -107,14 +105,14 @@ async def update_user(user_id: str, updated_data: User):
 @user_router.delete('/{user_id}')
 async def delete_user(user_id: str):
     """
-      Deletes an existing user from the database.
-      Args:
-          user_id (str): The ID of the user to delete.
-      Returns:
-          dict: A dictionary representing the deleted user.
-      Raises:
-          HTTPException: If the specified user ID is not found or if an error occurs.
-      """
+    Deletes an existing user from the database.
+    Args:
+        user_id (str): The ID of the user to delete.
+    Returns:
+        dict: A dictionary representing the deleted user.
+    Raises:
+        HTTPException: If the specified user ID is not found or if an error occurs.
+    """
     try:
         deleted_user = await user_service.delete_user(user_id)
         return json.loads(json_util.dumps(deleted_user))

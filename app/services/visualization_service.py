@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-
 from app.services import expense_service, revenue_service, user_service
 
 
@@ -9,7 +8,7 @@ async def expense_and_revenue_by_date(user_id: str):
     Generate a graph showing expenses and revenues over time for a specific user.
 
     Args:
-        user_id (int): The ID of the user.
+        user_id (str): The ID of the user.
 
     Raises:
         Exception: If there is an error during the process.
@@ -20,14 +19,16 @@ async def expense_and_revenue_by_date(user_id: str):
     try:
         expenses = await expense_service.get_expenses(user_id)
         revenues = await revenue_service.get_revenues(user_id)
+
+        # Sorting expenses and revenues by date
         expenses = sorted(expenses, key=lambda expense: expense['date'])
+        revenues = sorted(revenues, key=lambda revenue: revenue['date'])
+
+        # Extracting dates and amounts
         expense_dates = [expense['date'] for expense in expenses]
         expense_amounts = [expense['amount'] for expense in expenses]
-        revenues = sorted(revenues, key=lambda revenue: revenue['date'])
         revenue_dates = [revenue['date'] for revenue in revenues]
         revenue_amounts = [revenue['amount'] for revenue in revenues]
-
-        print(expense_amounts)
 
         plt.figure(figsize=(10, 6))
         plt.plot(expense_dates, expense_amounts, 'o-', label='Expenses')
@@ -48,7 +49,7 @@ async def balance_over_time(user_id: str):
     """
     Generate a graph showing the balance over time for a specific user.
     Args:
-        user_id (int): The ID of the user.
+        user_id (str): The ID of the user.
     Raises:
         Exception: If there is an error during the process.
     Returns:
@@ -58,11 +59,18 @@ async def balance_over_time(user_id: str):
         user = await user_service.get_user_by_id(user_id)
         if not user:
             raise ValueError("User not found")
+
         expenses = await expense_service.get_expenses(user_id)
         revenues = await revenue_service.get_revenues(user_id)
+
+        # Getting all unique dates from expenses and revenues
         dates = sorted(list(set([expense['date'] for expense in expenses] + [revenue['date'] for revenue in revenues])))
+
+        # Initial balance
         balance = user['balance']
         balances = [0.0]
+
+        # Calculating balance over time
         for date in dates:
             for expense in expenses:
                 if expense['date'] == date:
@@ -91,7 +99,7 @@ async def expense_distribution_by_category(user_id: str):
     Generate a pie chart showing the distribution of expenses by category for a specific user.
 
     Args:
-        user_id (int): The ID of the user.
+        user_id (str): The ID of the user.
 
     Raises:
         Exception: If there is an error during the process.
@@ -101,6 +109,8 @@ async def expense_distribution_by_category(user_id: str):
     """
     try:
         expenses = await expense_service.get_expenses(user_id)
+
+        # Aggregating expenses by category
         categories = {}
         for expense in expenses:
             category = expense['beneficiary']
@@ -127,7 +137,7 @@ async def monthly_summary(user_id: str):
     """
     Generate a bar chart showing the monthly summary of revenues and expenses for a specific user.
     Args:
-        user_id (int): The ID of the user.
+        user_id (str): The ID of the user.
     Raises:
         Exception: If there is an error during the process.
     Returns:
@@ -136,18 +146,28 @@ async def monthly_summary(user_id: str):
     try:
         expenses = await expense_service.get_expenses(user_id)
         revenues = await revenue_service.get_revenues(user_id)
+
+        # Converting dates to pandas datetime
         expense_df = pd.DataFrame(expenses)
         revenue_df = pd.DataFrame(revenues)
         expense_df['date'] = pd.to_datetime(expense_df['date'])
         revenue_df['date'] = pd.to_datetime(revenue_df['date'])
+
+        # Extracting month from dates
         expense_df['month'] = expense_df['date'].dt.to_period('M')
         revenue_df['month'] = revenue_df['date'].dt.to_period('M')
+
+        # Grouping by month and summing amounts
         monthly_expenses = expense_df.groupby('month')['amount'].sum()
         monthly_revenues = revenue_df.groupby('month')['amount'].sum()
+
+        # Creating a dataframe with expenses and revenues
         df = pd.DataFrame({
             'Expenses': monthly_expenses,
             'Revenues': monthly_revenues
         }).fillna(0)
+
+        # Plotting the bar chart
         df.plot(kind='bar', figsize=(10, 6))
         plt.title(f'Monthly Summary for User ID = {user_id}')
         plt.xlabel('Month')

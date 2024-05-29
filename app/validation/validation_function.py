@@ -4,12 +4,13 @@ from datetime import datetime, timezone, timedelta
 
 def is_valid_id(v: str):
     """
-    Validate if the string is a valid alphanumeric string with special characters.
+    Validate if the string is a valid 9-digit ID.
     Args:
-        string (str): The string to validate.
+        v (str): The string to validate.
     Returns:
-        bool: True if the string is valid, False otherwise.
-        :param v:
+        str: The validated ID.
+    Raises:
+        ValueError: If the string is not a valid 9-digit ID.
     """
     if not re.fullmatch(r'^\d{9}$', v):
         raise ValueError('id must be exactly 9 digits')
@@ -17,9 +18,19 @@ def is_valid_id(v: str):
 
 
 def check_user_name(v: str):
+    """
+    Validate if the username string is not empty.
+    Args:
+        v (str): The username string to validate.
+    Returns:
+        str: The validated username.
+    Raises:
+        ValueError: If the username string is empty.
+    """
     if not v.strip():
         raise ValueError('user_name must not be empty')
     return v
+
 
 def is_valid_phone(phone_number: str):
     """
@@ -27,7 +38,9 @@ def is_valid_phone(phone_number: str):
     Args:
         phone_number (str): The Israeli phone number to validate.
     Returns:
-        bool: True if the phone number is valid, False otherwise.
+        str: The validated phone number.
+    Raises:
+        ValueError: If the phone number is not in the correct format.
     """
     if not re.match(r"^05\d-\d{7}$", phone_number) and not re.match(r"^0\d-\d{7}$", phone_number):
         raise ValueError('Phone number must be in the format 05X-YYYYYYY.')
@@ -36,12 +49,13 @@ def is_valid_phone(phone_number: str):
 
 def is_valid_date(date: datetime):
     """
-    Validate if the birthdate is valid.
+    Validate if the date is a valid birthdate (at least 15 years old).
     Args:
-        birth_date (datetime): The birthdate to validate.
+        date (datetime): The birthdate to validate.
     Returns:
-        bool: True if the birthdate is valid, False otherwise.
-        :param date:
+        datetime: The validated birthdate.
+    Raises:
+        ValueError: If the birthdate is not at least 15 years old.
     """
     today = datetime.now().date()
     min_birth_date = today - timedelta(days=0 * 365)  # Roughly 15 years
@@ -51,6 +65,15 @@ def is_valid_date(date: datetime):
 
 
 def is_valid_password(v: str):
+    """
+    Validate if the string is a valid password.
+    Args:
+        v (str): The password string to validate.
+    Returns:
+        str: The validated password.
+    Raises:
+        ValueError: If the password string does not meet the criteria.
+    """
     if len(v) < 8:
         raise ValueError('password must be at least 8 characters long')
     if not re.search(r'[A-Z]', v):
@@ -65,6 +88,15 @@ def is_valid_password(v: str):
 
 
 def check_amount(amount: float):
+    """
+    Validate if the amount is positive.
+    Args:
+        amount (float): The amount to validate.
+    Returns:
+        float: The validated amount.
+    Raises:
+        ValueError: If the amount is negative.
+    """
     if amount < 0:
         raise ValueError('The amount must be positive')
     return amount
