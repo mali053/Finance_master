@@ -1,6 +1,6 @@
 from app.database import repository
 from app.database.database_connection import Collections
-from app.log import log_decorator
+from app.log.log import log_decorator
 from app.models.expense import Expense
 from app.services import balance_service
 
