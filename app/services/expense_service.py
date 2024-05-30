@@ -61,8 +61,11 @@ async def add_expense(new_expense: Expense):
     if new_expense is None:
         raise ValueError("Expense object is null")
     expenses = await repository.get_all(Collections.expenses)
-    max_item = max(expenses, key=lambda item: item['id'])
-    new_expense.id = max_item['id'] + 1
+    if expenses is None:
+        new_expense.id = 0
+    else:
+        max_item = max(expenses, key=lambda item: item['id'])
+        new_expense.id = max_item['id'] + 1
     try:
         await balance_service.change_balance(new_expense.userId, new_expense.amount * -1)
         return await repository.add(Collections.expenses, new_expense.dict())

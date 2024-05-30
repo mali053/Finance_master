@@ -61,8 +61,11 @@ async def add_revenue(new_revenue: Revenue):
     if new_revenue is None:
         raise ValueError("Expense object is null")
     revenues = await repository.get_all(Collections.revenues)
-    max_item = max(revenues, key=lambda item: item['id'])
-    new_revenue.id = max_item['id']+1
+    if revenues is None:
+        new_revenue.id = 0
+    else:
+        max_item = max(revenues, key=lambda item: item['id'])
+        new_revenue.id = max_item['id'] + 1
     try:
         print(new_revenue)
         await balance_service.change_balance(new_revenue.userId, new_revenue.amount)
